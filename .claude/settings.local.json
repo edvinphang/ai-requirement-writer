@@ -1,0 +1,33 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(awk -F',' 'NR>1 {print $24}' \"/Users/edvin/Documents/Claude Sandbox 2/Tracking Steps 2.0.csv\")",
+      "Bash(awk -F',' 'NR>1 {print $6, $2, $3}' \"/Users/edvin/Documents/Claude Sandbox 2/Tracking Steps 2.0.csv\")",
+      "Bash(awk '$2==$3 {print \"same\"}  $2!=$3 {print \"diff\"}')",
+      "Bash(awk -F',' 'NR>1 && $25 != \"NULL\" && $25 != \"\" {print $6}' \"/Users/edvin/Documents/Claude Sandbox 2/Tracking Steps 2.0.csv\")",
+      "Bash(awk '{print NR, $0}')",
+      "Bash(awk NR>=448 && NR<=460 {printf \"Line %d: %d chars\\\\n\", NR, length\\($0\\)} *)",
+      "Bash(awk {if\\(length\\($0\\) > 1000\\) printf \"Line %d: %d chars\\\\n\", NR, length\\($0\\)} *)",
+      "Bash(sips -g all \"/Users/edvin/Documents/Claude Sandbox 2/socoe_logo.png\")",
+      "Bash(sips -Z 800 \"/Users/edvin/Documents/Claude Sandbox 2/socoe_logo.png\" --out \"/Users/edvin/Documents/Claude Sandbox 2/socoe_logo.png\")",
+      "Bash(php --version)",
+      "Bash(composer --version)",
+      "Bash(npm --version)",
+      "Bash(mysql --version)",
+      "Bash(git init *)",
+      "Bash(composer create-project *)",
+      "Bash(composer require *)",
+      "Bash(php artisan *)",
+      "Bash(npx create-next-app@latest frontend --typescript --tailwind --eslint --app --no-src-dir --import-alias \"@/*\" --yes)",
+      "Bash(npm install *)",
+      "Bash(npx vitest *)",
+      "Bash(git add *)",
+      "Bash(git check-ignore *)",
+      "Bash(git commit -m ' *)",
+      "Bash(python3 -m json.tool frontend/tsconfig.json)",
+      "Bash(mysql -u root -e \"SHOW DATABASES LIKE 'ai_requirement_writer';\")",
+      "Bash(xargs cat -n)",
+      "Bash(npm run *)"
+    ]
+  }
+}
