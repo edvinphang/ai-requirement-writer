@@ -22,7 +22,7 @@ class AuthController extends Controller
 
         $token = $user->createToken('api-token')->plainTextToken;
 
-        return response()->json(['data' => ['user' => $user, 'token' => $token]], 201);
+        return response()->json(['data' => ['user' => $this->userShape($user), 'token' => $token]], 201);
     }
 
     public function login(Request $request): JsonResponse
@@ -41,7 +41,7 @@ class AuthController extends Controller
         $user = Auth::user();
         $token = $user->createToken('api-token')->plainTextToken;
 
-        return response()->json(['data' => ['user' => $user, 'token' => $token]]);
+        return response()->json(['data' => ['user' => $this->userShape($user), 'token' => $token]]);
     }
 
     public function logout(Request $request): JsonResponse
@@ -53,5 +53,15 @@ class AuthController extends Controller
         }
 
         return response()->json(['message' => 'Logged out']);
+    }
+
+    private function userShape(User $user): array
+    {
+        return [
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+            'role' => $user->role,
+        ];
     }
 }
