@@ -58,10 +58,14 @@ class GenerationController extends Controller
             'brd_draft_id' => ['required', 'integer'],
         ]);
 
-        $brdDraft = RequirementDraft::findOrFail($request->brd_draft_id);
+        $brdDraft = $project->drafts()->where('type', 'brd')->findOrFail($request->brd_draft_id);
 
         if ($brdDraft->status !== 'approved') {
             abort(422, 'BRD draft must be approved before generating stories.');
+        }
+
+        if (! $brdDraft->content) {
+            return response()->json(['message' => 'BRD draft has no content.'], 422);
         }
 
         $draft = $project->drafts()->create([
@@ -99,8 +103,8 @@ class GenerationController extends Controller
             'stories_draft_id' => ['required', 'integer'],
         ]);
 
-        $brdDraft = RequirementDraft::findOrFail($request->brd_draft_id);
-        $storiesDraft = RequirementDraft::findOrFail($request->stories_draft_id);
+        $brdDraft = $project->drafts()->where('type', 'brd')->findOrFail($request->brd_draft_id);
+        $storiesDraft = $project->drafts()->where('type', 'stories')->findOrFail($request->stories_draft_id);
 
         if ($brdDraft->status !== 'approved') {
             abort(422, 'BRD draft must be approved before generating spec.');
@@ -108,6 +112,10 @@ class GenerationController extends Controller
 
         if ($storiesDraft->status !== 'approved') {
             abort(422, 'Stories draft must be approved before generating spec.');
+        }
+
+        if (! $brdDraft->content || ! $storiesDraft->content) {
+            return response()->json(['message' => 'One or more drafts have no content.'], 422);
         }
 
         $draft = $project->drafts()->create([
@@ -136,6 +144,6 @@ class GenerationController extends Controller
 
     private function nextVersion(Project $project, string $type): int
     {
-        return $project->drafts()->where('type', $type)->max('version') + 1 ?? 1;
+        return ($project->drafts()->where('type', $type)->max('version') ?? 0) + 1;
     }
 }
