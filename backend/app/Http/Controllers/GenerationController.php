@@ -27,6 +27,7 @@ class GenerationController extends Controller
         $draft = $project->drafts()->create([
             'type' => 'brd',
             'version' => $this->nextVersion($project, 'brd'),
+            'content' => '',
         ]);
 
         return response()->stream(function () use ($intake, $draft) {
@@ -71,6 +72,7 @@ class GenerationController extends Controller
         $draft = $project->drafts()->create([
             'type' => 'stories',
             'version' => $this->nextVersion($project, 'stories'),
+            'content' => '',
         ]);
 
         return response()->stream(function () use ($brdDraft, $draft) {
@@ -121,6 +123,7 @@ class GenerationController extends Controller
         $draft = $project->drafts()->create([
             'type' => 'spec',
             'version' => $this->nextVersion($project, 'spec'),
+            'content' => '',
         ]);
 
         return response()->stream(function () use ($brdDraft, $storiesDraft, $draft) {
