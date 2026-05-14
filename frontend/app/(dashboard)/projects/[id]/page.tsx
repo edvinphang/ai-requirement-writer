@@ -15,13 +15,15 @@ interface Project {
 export default function ProjectDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
   const [project, setProject] = useState<Project | null>(null)
+  const [loadError, setLoadError] = useState('')
 
   useEffect(() => {
     apiClient.get<{ data: Project }>(`/projects/${id}`)
       .then(res => setProject(res.data))
-      .catch(console.error)
+      .catch(() => setLoadError('Failed to load project'))
   }, [id])
 
+  if (loadError) return <p className="text-sm text-red-600">{loadError}</p>
   if (!project) return <p className="text-sm text-gray-500">Loading…</p>
 
   return (

@@ -8,10 +8,10 @@ function getToken(): string | null {
 async function request<T>(method: string, path: string, body?: unknown): Promise<T> {
   const token = getToken()
   const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
     Accept: 'application/json',
   }
   if (token) headers['Authorization'] = `Bearer ${token}`
+  if (body !== undefined) headers['Content-Type'] = 'application/json'
 
   const res = await fetch(`${BASE_URL}${path}`, {
     method,

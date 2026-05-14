@@ -25,11 +25,12 @@ export default function IntakePage({ params }: { params: Promise<{ id: string }>
   const [formValues, setFormValues] = useState<Record<string, string>>({})
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
+  const [loadError, setLoadError] = useState('')
 
   useEffect(() => {
     apiClient.get<{ data: Project }>(`/projects/${id}`)
       .then(res => setProject(res.data))
-      .catch(console.error)
+      .catch(() => setLoadError('Failed to load project'))
   }, [id])
 
   function handleChange(key: string, value: string) {
@@ -55,6 +56,7 @@ export default function IntakePage({ params }: { params: Promise<{ id: string }>
     }
   }
 
+  if (loadError) return <p className="text-sm text-red-600">{loadError}</p>
   if (!project) return <p className="text-sm text-gray-500">Loading…</p>
 
   const fields = project.template?.fields ?? []
