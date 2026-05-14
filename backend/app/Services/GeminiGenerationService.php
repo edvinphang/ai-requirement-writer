@@ -48,7 +48,12 @@ class GeminiGenerationService
             ->streamGenerateContent($userPrompt);
 
         foreach ($stream as $response) {
-            $text = $response->text();
+            try {
+                $text = $response->text();
+            } catch (\ValueError $e) {
+                \Illuminate\Support\Facades\Log::warning('Gemini stream chunk skipped: ' . $e->getMessage());
+                continue;
+            }
             if ($text !== '') {
                 $onChunk($text);
             }
@@ -61,7 +66,7 @@ class GeminiGenerationService
     private function buildBrdPrompt(array $fields): string
     {
         $formatted = collect($fields)
-            ->map(fn ($value, $key) => "**{$key}**: {$value}")
+            ->map(fn ($value, $key) => '**' . $key . '**: ' . (is_array($value) ? implode(', ', $value) : (string) $value))
             ->implode("\n");
 
         return "Generate a Business Requirements Document (BRD) based on the following project intake:\n\n{$formatted}";
