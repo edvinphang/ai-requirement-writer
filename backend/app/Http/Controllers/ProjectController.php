@@ -29,7 +29,7 @@ class ProjectController extends Controller
             return response()->json(['message' => 'Forbidden'], 403);
         }
 
-        return response()->json(['data' => $project]);
+        return response()->json(['data' => $project->load('template')]);
     }
 
     public function destroy(Request $request, Project $project): JsonResponse
