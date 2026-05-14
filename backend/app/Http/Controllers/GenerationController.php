@@ -31,15 +31,21 @@ class GenerationController extends Controller
         ]);
 
         return response()->stream(function () use ($intake, $draft) {
-            $accumulated = '';
-            $this->gemini->streamBrd($intake->fields, function (string $chunk) use (&$accumulated) {
-                $accumulated .= $chunk;
-                echo 'data: ' . json_encode(['text' => $chunk]) . "\n\n";
-                ob_flush();
-                flush();
-            });
-            $draft->update(['content' => $accumulated]);
-            echo "data: [DONE]\n\n";
+            try {
+                $accumulated = '';
+                $this->gemini->streamBrd($intake->fields, function (string $chunk) use (&$accumulated) {
+                    $accumulated .= $chunk;
+                    echo 'data: ' . json_encode(['text' => $chunk]) . "\n\n";
+                    ob_flush();
+                    flush();
+                });
+                $draft->update(['content' => $accumulated]);
+                echo "data: [DONE]\n\n";
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error('BRD generation failed: ' . $e->getMessage());
+                echo 'data: ' . json_encode(['error' => 'Generation failed: ' . $e->getMessage()]) . "\n\n";
+                echo "data: [DONE]\n\n";
+            }
             ob_flush();
             flush();
         }, 200, [
@@ -76,15 +82,21 @@ class GenerationController extends Controller
         ]);
 
         return response()->stream(function () use ($brdDraft, $draft) {
-            $accumulated = '';
-            $this->gemini->streamStories($brdDraft->content, function (string $chunk) use (&$accumulated) {
-                $accumulated .= $chunk;
-                echo 'data: ' . json_encode(['text' => $chunk]) . "\n\n";
-                ob_flush();
-                flush();
-            });
-            $draft->update(['content' => $accumulated]);
-            echo "data: [DONE]\n\n";
+            try {
+                $accumulated = '';
+                $this->gemini->streamStories($brdDraft->content, function (string $chunk) use (&$accumulated) {
+                    $accumulated .= $chunk;
+                    echo 'data: ' . json_encode(['text' => $chunk]) . "\n\n";
+                    ob_flush();
+                    flush();
+                });
+                $draft->update(['content' => $accumulated]);
+                echo "data: [DONE]\n\n";
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error('Stories generation failed: ' . $e->getMessage());
+                echo 'data: ' . json_encode(['error' => 'Generation failed: ' . $e->getMessage()]) . "\n\n";
+                echo "data: [DONE]\n\n";
+            }
             ob_flush();
             flush();
         }, 200, [
@@ -127,15 +139,21 @@ class GenerationController extends Controller
         ]);
 
         return response()->stream(function () use ($brdDraft, $storiesDraft, $draft) {
-            $accumulated = '';
-            $this->gemini->streamSpec($brdDraft->content, $storiesDraft->content, function (string $chunk) use (&$accumulated) {
-                $accumulated .= $chunk;
-                echo 'data: ' . json_encode(['text' => $chunk]) . "\n\n";
-                ob_flush();
-                flush();
-            });
-            $draft->update(['content' => $accumulated]);
-            echo "data: [DONE]\n\n";
+            try {
+                $accumulated = '';
+                $this->gemini->streamSpec($brdDraft->content, $storiesDraft->content, function (string $chunk) use (&$accumulated) {
+                    $accumulated .= $chunk;
+                    echo 'data: ' . json_encode(['text' => $chunk]) . "\n\n";
+                    ob_flush();
+                    flush();
+                });
+                $draft->update(['content' => $accumulated]);
+                echo "data: [DONE]\n\n";
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error('Spec generation failed: ' . $e->getMessage());
+                echo 'data: ' . json_encode(['error' => 'Generation failed: ' . $e->getMessage()]) . "\n\n";
+                echo "data: [DONE]\n\n";
+            }
             ob_flush();
             flush();
         }, 200, [

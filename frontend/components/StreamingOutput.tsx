@@ -63,9 +63,16 @@ export default function StreamingOutput({ projectId, endpoint, body, onComplete,
             return
           }
           try {
-            const { text: chunk } = JSON.parse(payload)
-            accumulatedRef.current += chunk
-            setText(prev => prev + chunk)
+            const parsed = JSON.parse(payload)
+            if (parsed.error) {
+              onError(parsed.error)
+              setStreaming(false)
+              return
+            }
+            if (parsed.text) {
+              accumulatedRef.current += parsed.text
+              setText(prev => prev + parsed.text)
+            }
           } catch {
             // malformed chunk, skip
           }
