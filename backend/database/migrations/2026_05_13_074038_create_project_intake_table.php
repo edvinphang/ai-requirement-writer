@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('project_intakes', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('project_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('project_id')->unique()->constrained()->cascadeOnDelete();
             $table->json('fields');
             $table->timestamps();
         });

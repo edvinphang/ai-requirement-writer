@@ -30,7 +30,6 @@ class RequirementDraft extends Model
 
     public function approve(): void
     {
-        $this->status = 'approved';
-        $this->save();
+        $this->update(['status' => 'approved']);
     }
 }

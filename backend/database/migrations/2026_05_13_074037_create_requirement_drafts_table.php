@@ -14,10 +14,11 @@ return new class extends Migration
         Schema::create('requirement_drafts', function (Blueprint $table) {
             $table->id();
             $table->foreignId('project_id')->constrained()->cascadeOnDelete();
-            $table->string('type');
+            $table->enum('type', ['brd', 'stories', 'spec']);
             $table->unsignedInteger('version')->default(1);
             $table->longText('content');
-            $table->string('status')->default('draft');
+            $table->enum('status', ['draft', 'approved'])->default('draft');
+            $table->unique(['project_id', 'type', 'version']);
             $table->timestamps();
         });
     }
