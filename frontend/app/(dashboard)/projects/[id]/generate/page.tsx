@@ -58,8 +58,10 @@ export default function GeneratePage({ params }: { params: Promise<{ id: string 
   }
 
   function generateBody(step: Step): Record<string, unknown> {
-    if (step === 'stories') return { brd_draft_id: latestDraft('brd')!.id }
-    if (step === 'spec') return { brd_draft_id: latestDraft('brd')!.id, stories_draft_id: latestDraft('stories')!.id }
+    const brd = latestDraft('brd')
+    const stories = latestDraft('stories')
+    if (step === 'stories' && brd) return { brd_draft_id: brd.id }
+    if (step === 'spec' && brd && stories) return { brd_draft_id: brd.id, stories_draft_id: stories.id }
     return {}
   }
 

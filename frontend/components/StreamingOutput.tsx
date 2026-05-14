@@ -5,7 +5,7 @@ interface Props {
   projectId: string
   endpoint: string
   body?: Record<string, unknown>
-  onComplete: (draftId: number, content: string) => void
+  onComplete: (content: string) => void
   onError: (msg: string) => void
 }
 
@@ -13,15 +13,14 @@ export default function StreamingOutput({ projectId, endpoint, body, onComplete,
   const [text, setText] = useState('')
   const [streaming, setStreaming] = useState(false)
   const [done, setDone] = useState(false)
-  const draftIdRef = useRef<number | null>(null)
   const accumulatedRef = useRef('')
 
   useEffect(() => {
+    const controller = new AbortController()
     const token = localStorage.getItem('token')
     setStreaming(true)
     setText('')
     accumulatedRef.current = ''
-    draftIdRef.current = null
 
     const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000/api'
 
@@ -30,9 +29,10 @@ export default function StreamingOutput({ projectId, endpoint, body, onComplete,
       headers: {
         'Content-Type': 'application/json',
         Accept: 'text/event-stream',
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${token ?? ''}`,
       },
       body: JSON.stringify(body ?? {}),
+      signal: controller.signal,
     }).then(async res => {
       if (!res.ok) {
         const err = await res.json()
@@ -59,7 +59,7 @@ export default function StreamingOutput({ projectId, endpoint, body, onComplete,
           if (payload === '[DONE]') {
             setDone(true)
             setStreaming(false)
-            onComplete(draftIdRef.current ?? 0, accumulatedRef.current)
+            onComplete(accumulatedRef.current)
             return
           }
           try {
@@ -72,10 +72,13 @@ export default function StreamingOutput({ projectId, endpoint, body, onComplete,
         }
       }
     }).catch(err => {
+      if (err.name === 'AbortError') return
       onError(err.message ?? 'Network error')
       setStreaming(false)
     })
-  }, []) // runs once on mount
+
+    return () => controller.abort()
+  }, [endpoint, JSON.stringify(body), onComplete, onError]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="relative">
